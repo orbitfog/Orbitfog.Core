@@ -76,3 +76,40 @@ DbCommand command = ...;
 ```cs
 List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader());
 ```
+
+## Performance test
+
+* Microsoft SQL Server on local machine
+* Create database `Orbitfog.Core.Database.Mapper.PerformanceTestCli` on local machine
+* Generate sql file by running `Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli` and execute file on local database, this create table `[dbo].[Test1]` with 100 000 rows.
+* Build `Orbitfog.Core.Database.Mapper.PerformanceTestCli` as `Release` and run from `Visual Studio`: `Debug` > `Start Without Debugging`
+
+### Results for `.NET Core 3.1` on Windows, average time for 5 executions:
+
+Native - first time:
+* 10 rows: 1,0895 ms
+* 100 rows: 1,253 ms
+* 1000 rows: 5,6587 ms
+* 10000 rows: 57,1686 ms
+* 100000 rows: 590,0946 ms
+
+Native - second time:
+* 10 rows: 0,407 ms
+* 100 rows: 0,8129 ms
+* 1000 rows: 5,4382 ms
+* 10000 rows: 59,9421 ms
+* 100000 rows: 598,2192 ms
+
+OrbitfogCoreDatabaseMapper - first time:
+* 10 rows: 0,5249 ms
+* 100 rows: 1,2503 ms
+* 1000 rows: 5,9399 ms
+* 10000 rows: 63,7302 ms
+* 100000 rows: 587,278 ms
+
+OrbitfogCoreDatabaseMapper - second time:
+* 10 rows: 0,4568 ms
+* 100 rows: 1,116 ms
+* 1000 rows: 6,5835 ms
+* 10000 rows: 60,1262 ms
+* 100000 rows: 604,7892 ms
