@@ -18,6 +18,31 @@ High-performance library base on `System.Linq.Expressions` to map `System.Data.C
 
 This library give you possibility change existing code, with low performance, for an existing database framework. Only requirements is access to `DbDataReader` object.
 
+NuGet package - [Orbitfog.Core.Database.Mapper](https://www.nuget.org/packages/Orbitfog.Core.Database.Mapper)
+
+## Configuration
+
+Default behavior:
+```cs
+DbDataReaderMapperConfiguration.Default.CaseSensitive = true;
+DbDataReaderMapperConfiguration.Default.UseProperties = true;
+DbDataReaderMapperConfiguration.Default.UseFields = false;
+```
+
+You can initialize the class before execute `ToList()`, but it is not necessary:
+```cs
+DbDataReaderMapper<SomeClass>.Initialize());
+```
+
+Or changing behavior for the class:
+```cs
+DbDataReaderMapper<SomeClass>.Initialize(new DbDataReaderMapperConfiguration()
+{
+    CaseSensitive = false
+});
+```
+
+
 ## Examples
 
 Example 1:
@@ -51,12 +76,3 @@ DbCommand command = ...;
 ```cs
 List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader());
 ```
-
-You can initialize type before execute `ToList()`, but it is not necessary:
-```cs
-DbDataReaderMapper<SomeClass>.Initialize());
-```
-
-## NuGet package
-
-* [Orbitfog.Core.Database.Mapper](https://www.nuget.org/packages/Orbitfog.Core.Database.Mapper)

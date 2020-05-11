@@ -10,7 +10,6 @@ namespace Orbitfog.Core.Database.Mapper
         public static readonly MethodInfo get_FieldCount = typeof(DbDataReader).GetRuntimeProperty(nameof(DbDataReader.FieldCount))?.GetMethod;
         public static readonly MethodInfo get_HasRows = typeof(DbDataReader).GetRuntimeProperty(nameof(DbDataReader.HasRows))?.GetMethod;
         public static readonly MethodInfo IsDBNull = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.IsDBNull), new Type[] { typeof(int) });
-        public static readonly MethodInfo GetName = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.GetName), new Type[] { typeof(int) });
         public static readonly MethodInfo GetBoolean = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.GetBoolean), new Type[] { typeof(int) });
         public static readonly MethodInfo GetDateTime = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.GetDateTime), new Type[] { typeof(int) });
         public static readonly MethodInfo GetDecimal = typeof(DbDataReader).GetRuntimeMethod(nameof(DbDataReader.GetDecimal), new Type[] { typeof(int) });

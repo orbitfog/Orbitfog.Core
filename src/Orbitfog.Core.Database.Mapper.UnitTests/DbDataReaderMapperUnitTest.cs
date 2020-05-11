@@ -44,6 +44,14 @@ namespace Orbitfog.Core.Database.Mapper.UnitTests
 #pragma warning restore 0649
         }
 
+        private class ClassD
+        {
+            public int IntValue1 { get; set; }
+#pragma warning disable 0649
+            public int IntValue2;
+#pragma warning restore 0649
+        }
+
         [Fact]
         public void ToList_ClassA_1()
         {
@@ -284,6 +292,42 @@ namespace Orbitfog.Core.Database.Mapper.UnitTests
         {
             DbDataReaderMapper<string>.Initialize();
             DbDataReaderMapper<ClassA>.Initialize();
+        }
+
+        [Fact]
+        public void ToList_ClassD_1()
+        {
+            int i = 0;
+            var fakeDatabaseDataList = new List<FakeDbDataReaderRow>()
+            {
+                new FakeDbDataReaderRow()
+                .AddColumn(typeof(int), "INTvalue1", ++i)
+                .AddColumn(typeof(int), "IntVALUE2", ++i),
+                new FakeDbDataReaderRow()
+                .AddColumn(typeof(int), "INTvalue1", ++i)
+                .AddColumn(typeof(int), "IntVALUE2", ++i),
+                new FakeDbDataReaderRow()
+                .AddColumn(typeof(int), "INTvalue1", ++i)
+                .AddColumn(typeof(int), "IntVALUE2", ++i),
+            };
+
+            DbDataReaderMapper<ClassD>.Initialize(new DbDataReaderMapperConfiguration()
+            {
+                CaseSensitive = false
+            });
+
+            var list = DbDataReaderMapper<ClassD>.ToList(new FakeDbDataReader(fakeDatabaseDataList));
+
+            Assert.Equal(3, list.Count);
+
+            Assert.Equal(1, list[0].IntValue1);
+            Assert.Equal(2, list[0].IntValue2);
+
+            Assert.Equal(3, list[1].IntValue1);
+            Assert.Equal(4, list[1].IntValue2);
+
+            Assert.Equal(5, list[2].IntValue1);
+            Assert.Equal(6, list[2].IntValue2);
         }
     }
 }

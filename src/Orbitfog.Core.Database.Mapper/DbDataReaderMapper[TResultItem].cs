@@ -12,27 +12,40 @@ namespace Orbitfog.Core.Database.Mapper
         private static readonly MethodInfo List_Add = typeof(List<TResultItem>).GetMethod(nameof(List<TResultItem>.Add), new Type[] { typeof(TResultItem) });
         private static readonly MethodInfo DbDataReaderMapper_GetAllowDbNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetAllowDbNullList), BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo DbDataReaderMapper_AllowDBNull = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(AllowDBNull), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo DbDataReaderMapper_GetName = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetName), BindingFlags.NonPublic | BindingFlags.Static);
 
         private delegate List<TResultItem> ToListHandle(DbDataReader dbDataReader);
 
-        private static readonly Lazy<ToListHandle> toList = new Lazy<ToListHandle>(() =>
+        private static Lazy<ToListHandle> toList;
+
+        static DbDataReaderMapper()
         {
-            if (IsTypeForSingleColumn())
+            Initialize();
+        }
+
+        private static ToListHandle InitializeToList(DbDataReaderMapperConfiguration configuration = null)
+        {
+            if (OnlyFirstColumn())
             {
-                return SingleColumn;
+                return ToListFirstColumn;
             }
             else
             {
-                return BuildMultiColumn();
+                return BuildToListMultiColumn(configuration);
             }
-        });
+        }
 
         private DbDataReaderMapper()
         {
         }
 
-        public static void Initialize()
+        public static void Initialize(DbDataReaderMapperConfiguration configuration = null)
         {
+            toList = new Lazy<ToListHandle>(() =>
+            {
+                return InitializeToList(configuration);
+            });
+
             toList.Value(null);
         }
 
@@ -41,9 +54,11 @@ namespace Orbitfog.Core.Database.Mapper
             return toList.Value(dbDataReader);
         }
 
-        private static ToListHandle BuildMultiColumn()
+        private static ToListHandle BuildToListMultiColumn(DbDataReaderMapperConfiguration configuration)
         {
-            var itmList = GetItemList();
+            configuration = configuration ?? DbDataReaderMapperConfiguration.Default;
+
+            var itmList = GetItemList(configuration);
 
             var returnType = typeof(List<TResultItem>);
             var returnValue = Expression.Label(returnType, "returnValue");
@@ -77,7 +92,7 @@ namespace Orbitfog.Core.Database.Mapper
                                                                             Expression.ArrayAccess(checkNulls, i),
                                                                             Expression.Call(null, DbDataReaderMapper_AllowDBNull, columnSchema, i)
                                                                         ),
-                                                                        BuildInitSwitch(dbDataReader, i, readerMap, itmList)
+                                                                        BuildInitSwitch(dbDataReader, i, readerMap, itmList, configuration)
                                                                     )
                                                                 ),
                                                                 While(
@@ -95,33 +110,39 @@ namespace Orbitfog.Core.Database.Mapper
             return Expression.Lambda<ToListHandle>(expression, dbDataReader).Compile();
         }
 
-        private static List<DbDataReaderMapperItem> GetItemList()
+        private static List<DbDataReaderMapperItem> GetItemList(DbDataReaderMapperConfiguration configuration)
         {
             var ttype = typeof(TResultItem);
             int code = 1;
             var resultList = new List<DbDataReaderMapperItem>();
-            foreach (var propertyInfo in ttype.GetRuntimeProperties())
+            if (configuration.UseProperties)
             {
-                var obj_set_MethodInfo = propertyInfo.SetMethod;
-                if (ValidateProperty(propertyInfo, obj_set_MethodInfo, 1))
+                foreach (var propertyInfo in ttype.GetRuntimeProperties())
                 {
-                    ProcessType(propertyInfo.PropertyType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
-                    if (dbDataReader_GetValue_MethodInfo != null)
+                    var obj_set_MethodInfo = propertyInfo.SetMethod;
+                    if (ValidateProperty(propertyInfo, obj_set_MethodInfo))
                     {
-                        resultList.Add(new DbDataReaderMapperProperty(code, isNullable, dbDataReader_GetValue_MethodInfo, propertyInfo));
-                        code++;
+                        ProcessType(propertyInfo.PropertyType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
+                        if (dbDataReader_GetValue_MethodInfo != null)
+                        {
+                            resultList.Add(new DbDataReaderMapperProperty(code, isNullable, dbDataReader_GetValue_MethodInfo, propertyInfo));
+                            code++;
+                        }
                     }
                 }
             }
-            foreach (var fieldInfo in ttype.GetRuntimeFields())
+            if (configuration.UseFields)
             {
-                if (ValidateField(fieldInfo))
+                foreach (var fieldInfo in ttype.GetRuntimeFields())
                 {
-                    ProcessType(fieldInfo.FieldType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
-                    if (dbDataReader_GetValue_MethodInfo != null)
+                    if (ValidateField(fieldInfo))
                     {
-                        resultList.Add(new DbDataReaderMapperField(code, isNullable, dbDataReader_GetValue_MethodInfo, fieldInfo));
-                        code++;
+                        ProcessType(fieldInfo.FieldType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
+                        if (dbDataReader_GetValue_MethodInfo != null)
+                        {
+                            resultList.Add(new DbDataReaderMapperField(code, isNullable, dbDataReader_GetValue_MethodInfo, fieldInfo));
+                            code++;
+                        }
                     }
                 }
             }
@@ -149,7 +170,7 @@ namespace Orbitfog.Core.Database.Mapper
             dbDataReader_GetValue_MethodInfo = DbDataReade_GetValue_MethodInfo(propertyType);
         }
 
-        private static Expression BuildInitSwitch(ParameterExpression dbDataReader, ParameterExpression i, Expression readerMap, List<DbDataReaderMapperItem> itemList)
+        private static Expression BuildInitSwitch(ParameterExpression dbDataReader, ParameterExpression i, Expression readerMap, List<DbDataReaderMapperItem> itemList, DbDataReaderMapperConfiguration configuration)
         {
             if (itemList.Count <= 0)
             {
@@ -170,7 +191,7 @@ namespace Orbitfog.Core.Database.Mapper
                                                     ),
                                                     Expression.Break(breakLabel)
                                                 ),
-                                                Expression.Constant(item.ItemName)
+                                                Expression.Constant(configuration.CaseSensitive ? item.ItemName : item.ItemName.ToUpper())
                                             )
                     );
             }
@@ -178,7 +199,7 @@ namespace Orbitfog.Core.Database.Mapper
             var switchExpression =
                 Expression.Block(
                     Expression.Switch(
-                        Expression.Call(dbDataReader, DbDataReaderDefinitions.GetName, i),
+                        Expression.Call(null, DbDataReaderMapper_GetName, dbDataReader, i, Expression.Constant(configuration.CaseSensitive)),
                         switchCaseList.ToArray()
                     ),
                     Expression.Label(breakLabel)
@@ -336,9 +357,9 @@ namespace Orbitfog.Core.Database.Mapper
             }
         }
 
-        private static bool ValidateProperty(PropertyInfo pi, MethodInfo mi, int parameterCount)
+        private static bool ValidateProperty(PropertyInfo pi, MethodInfo mi)
         {
-            return pi != null && mi != null && !pi.PropertyType.IsPointer && mi.IsPublic && !mi.IsStatic && mi.GetParameters().Length == parameterCount;
+            return pi != null && mi != null && !pi.PropertyType.IsPointer && mi.IsPublic && !mi.IsStatic && mi.GetParameters().Length == 1;
         }
 
         private static bool ValidateField(FieldInfo fi)
@@ -381,7 +402,7 @@ namespace Orbitfog.Core.Database.Mapper
             }
         }
 
-        private static bool IsTypeForSingleColumn()
+        private static bool OnlyFirstColumn()
         {
             var type = typeof(TResultItem);
 
@@ -415,7 +436,7 @@ namespace Orbitfog.Core.Database.Mapper
             return false;
         }
 
-        private static List<TResultItem> SingleColumn(DbDataReader dbDataReader)
+        private static List<TResultItem> ToListFirstColumn(DbDataReader dbDataReader)
         {
             var resultList = new List<TResultItem>();
 
@@ -465,6 +486,18 @@ namespace Orbitfog.Core.Database.Mapper
                 type = underlyingType;
             }
             return type;
+        }
+
+        private static string GetName(DbDataReader dbDataReader, int ordinal, bool caseSensitive)
+        {
+            if (caseSensitive)
+            {
+                return dbDataReader.GetName(ordinal);
+            }
+            else
+            {
+                return dbDataReader.GetName(ordinal).ToUpper();
+            }
         }
 
         private static object GetValue(DbDataReader dbDataReader, int ordinal, Type type, TypeCode typeCode)
