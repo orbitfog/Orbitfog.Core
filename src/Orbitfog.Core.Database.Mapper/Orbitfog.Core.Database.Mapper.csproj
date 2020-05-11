@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netcoreapp2.0;net451;netstandard2.0</TargetFrameworks>
+    <Authors>orbitfog</Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Version>0.2.0</Version>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <Description>High-performance library to map System.Data.Common.DbDataReader to any class</Description>
+    <Copyright>orbitfog</Copyright>
+    <PackageProjectUrl>https://github.com/orbitfog/Orbitfog.Core</PackageProjectUrl>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.Data.Common" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

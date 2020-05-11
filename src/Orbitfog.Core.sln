@@ -1,0 +1,48 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbitfog.Core.Database.Mapper", "Orbitfog.Core.Database.Mapper\Orbitfog.Core.Database.Mapper.csproj", "{B6901E97-7A8E-4B09-8FBF-C5085273E03B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orbitfog.Core.Database.Mapper.UnitTests", "Orbitfog.Core.Database.Mapper.UnitTests\Orbitfog.Core.Database.Mapper.UnitTests.csproj", "{E53F277C-5584-4569-99DE-D90458E751D2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbitfog.Core.Database.Mapper.PerformanceTestCli", "Orbitfog.Core.Database.Mapper.PerformanceTestCli\Orbitfog.Core.Database.Mapper.PerformanceTestCli.csproj", "{1C32B575-0227-409F-91A9-2D3452041B86}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli", "Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli\Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli.csproj", "{D32CFFFE-0914-4C8E-97F8-C4554260711D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{DFD762A7-3782-4665-912E-DD1640821780}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B6901E97-7A8E-4B09-8FBF-C5085273E03B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6901E97-7A8E-4B09-8FBF-C5085273E03B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6901E97-7A8E-4B09-8FBF-C5085273E03B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6901E97-7A8E-4B09-8FBF-C5085273E03B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E53F277C-5584-4569-99DE-D90458E751D2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E53F277C-5584-4569-99DE-D90458E751D2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E53F277C-5584-4569-99DE-D90458E751D2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E53F277C-5584-4569-99DE-D90458E751D2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1C32B575-0227-409F-91A9-2D3452041B86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1C32B575-0227-409F-91A9-2D3452041B86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1C32B575-0227-409F-91A9-2D3452041B86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1C32B575-0227-409F-91A9-2D3452041B86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D32CFFFE-0914-4C8E-97F8-C4554260711D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D32CFFFE-0914-4C8E-97F8-C4554260711D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D32CFFFE-0914-4C8E-97F8-C4554260711D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D32CFFFE-0914-4C8E-97F8-C4554260711D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7B79D07F-E5E2-42B9-A00B-6C986DF065B5}
+	EndGlobalSection
+EndGlobal
