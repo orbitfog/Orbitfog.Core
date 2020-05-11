@@ -86,30 +86,11 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 
 ### Results for `.NET Core 3.1` on Windows, average time for 5 executions:
 
-Native - first time:
-* 10 rows: 1,0895 ms
-* 100 rows: 1,253 ms
-* 1000 rows: 5,6587 ms
-* 10000 rows: 57,1686 ms
-* 100000 rows: 590,0946 ms
-
-Native - second time:
-* 10 rows: 0,407 ms
-* 100 rows: 0,8129 ms
-* 1000 rows: 5,4382 ms
-* 10000 rows: 59,9421 ms
-* 100000 rows: 598,2192 ms
-
-OrbitfogCoreDatabaseMapper - first time:
-* 10 rows: 0,5249 ms
-* 100 rows: 1,2503 ms
-* 1000 rows: 5,9399 ms
-* 10000 rows: 63,7302 ms
-* 100000 rows: 587,278 ms
-
-OrbitfogCoreDatabaseMapper - second time:
-* 10 rows: 0,4568 ms
-* 100 rows: 1,116 ms
-* 1000 rows: 6,5835 ms
-* 10000 rows: 60,1262 ms
-* 100000 rows: 604,7892 ms
+| Name | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
+|:----|----:|----:|----:|----:|----:|
+| HandCoded - first time | 1,0776 ms | 1,2077 ms | 5,391 ms  | 53,6101 ms | 560,3239 ms |
+| HandCoded - second time | 0,5658 ms | 1,3117 ms | 5,3656 ms  | 53,275 ms | 581,3828 ms |
+| OrbitfogCoreDatabaseMapper - first time | 0,5618 ms | 1,2725 ms | 5,8555 ms  | 53,9275 ms | 566,7234 ms |
+| OrbitfogCoreDatabaseMapper - second time | 0,6159 ms | 1,3356 ms | 5,8459 ms  | 52,1557 ms | 590,8066 ms |
+| Dapper (Query<T>) - first time | 0,8099 ms | 1,3562 ms | 5,8828 ms  | 57,9416 ms | 664,3176 ms |
+| Dapper (Query<T>) - second time | 0,6125 ms | 1,334 ms | 5,4601 ms  | 59,8265 ms | 665,3886 ms |

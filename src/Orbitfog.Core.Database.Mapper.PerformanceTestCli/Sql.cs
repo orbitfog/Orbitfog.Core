@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -14,7 +15,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             return $"SELECT TOP {count} * FROM [dbo].[Test1]";
         }
 
-        public static List<Test1> Test1GetListNative(int count)
+        public static List<Test1> Test1GetListHandCoded(int count)
         {
             using (var connection = new SqlConnection())
             {
@@ -148,6 +149,17 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
 
                     return DbDataReaderMapper<Test1>.ToList(command.ExecuteReader());
                 }
+            }
+        }
+
+        public static List<Test1> Test1GetListDapper(int count)
+        {
+            using (var connection = new SqlConnection())
+            {
+                connection.ConnectionString = ConnectionString;
+                connection.Open();
+
+                return connection.Query<Test1>(GetCommandText(count)).ToList();
             }
         }
     }

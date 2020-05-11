@@ -26,15 +26,15 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
         {
             var resultList = new Dictionary<string, Result>();
 
-            RunTest("Native - first time", resultList, (int count) =>
+            RunTest("HandCoded - first time", resultList, (int count) =>
             {
-                Sql.Test1GetListNative(count);
+                Sql.Test1GetListHandCoded(count);
             });
             Console.WriteLine();
 
-            RunTest("Native - second time", resultList, (int count) =>
+            RunTest("HandCoded - second time", resultList, (int count) =>
             {
-                Sql.Test1GetListNative(count);
+                Sql.Test1GetListHandCoded(count);
             });
             Console.WriteLine();
 
@@ -50,21 +50,30 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             });
             Console.WriteLine();
 
+            RunTest("Dapper (Query<T>) - first time", resultList, (int count) =>
+            {
+                var x = Sql.Test1GetListDapper(count);
+            });
+            Console.WriteLine();
+
+            RunTest("Dapper (Query<T>) - second time", resultList, (int count) =>
+            {
+                var x = Sql.Test1GetListDapper(count);
+            });
+            Console.WriteLine();
+
             Console.WriteLine("============================================================");
             Console.WriteLine();
             Console.WriteLine("Average time");
             Console.WriteLine("");
+            Console.WriteLine("| Name | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |");
+            Console.WriteLine("|:----|----:|----:|----:|----:|----:|");
             foreach (var item in resultList)
             {
-                Console.WriteLine(item.Key + ":");
-                Console.WriteLine("* 10 rows: " + item.Value.Row10.TotalMilliseconds + " ms");
-                Console.WriteLine("* 100 rows: " + item.Value.Row100.TotalMilliseconds + " ms");
-                Console.WriteLine("* 1000 rows: " + item.Value.Row1000.TotalMilliseconds + " ms");
-                Console.WriteLine("* 10000 rows: " + item.Value.Row10000.TotalMilliseconds + " ms");
-                Console.WriteLine("* 100000 rows: " + item.Value.Row100000.TotalMilliseconds + " ms");
-                Console.WriteLine();
+                Console.WriteLine("| " + item.Key + " | " + item.Value.Row10.TotalMilliseconds + " ms | " + item.Value.Row100.TotalMilliseconds + " ms | " + item.Value.Row1000.TotalMilliseconds + " ms  | " + item.Value.Row10000.TotalMilliseconds + " ms | " + item.Value.Row100000.TotalMilliseconds + " ms |");
             }
 
+            Console.WriteLine();
             Console.WriteLine("Press any key");
             Console.ReadKey();
         }
@@ -77,6 +86,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             action(1);
 
             //10
+            GC.Collect();
             for (int i = 0; i < testCount; ++i)
             {
                 stoper.Stop();
@@ -91,6 +101,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             resultList[testName].Row10 = resultList[testName].Row10 / testCount;
 
             //100
+            GC.Collect();
             for (int i = 0; i < testCount; ++i)
             {
                 stoper.Stop();
@@ -105,6 +116,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             resultList[testName].Row100 = resultList[testName].Row100 / testCount;
 
             //1000
+            GC.Collect();
             for (int i = 0; i < testCount; ++i)
             {
                 stoper.Stop();
@@ -119,6 +131,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             resultList[testName].Row1000 = resultList[testName].Row1000 / testCount;
 
             //10000
+            GC.Collect();
             for (int i = 0; i < testCount; ++i)
             {
                 stoper.Stop();
@@ -133,6 +146,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             resultList[testName].Row10000 = resultList[testName].Row10000 / testCount;
 
             //100000
+            GC.Collect();
             for (int i = 0; i < testCount; ++i)
             {
                 stoper.Stop();
