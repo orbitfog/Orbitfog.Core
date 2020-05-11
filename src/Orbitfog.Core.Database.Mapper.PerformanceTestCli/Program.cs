@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
@@ -7,6 +8,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
     class Program
     {
         const int testCount = 5;
+        const int row1 = 1;
         const int row10 = 10;
         const int row100 = 100;
         const int row1000 = 1000;
@@ -26,25 +28,37 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
         {
             var resultList = new Dictionary<string, Result>();
 
-            RunTest("HandCoded - first time", resultList, (int count) =>
+            RunTest("Hand coded - first time", resultList, (int count) =>
             {
                 Sql.Test1GetListHandCoded(count);
             });
             Console.WriteLine();
 
-            RunTest("HandCoded - second time", resultList, (int count) =>
+            RunTest("Hand coded - second time", resultList, (int count) =>
             {
                 Sql.Test1GetListHandCoded(count);
             });
             Console.WriteLine();
 
-            RunTest("OrbitfogCoreDatabaseMapper - first time", resultList, (int count) =>
+            RunTest("Hand coded - third time", resultList, (int count) =>
+            {
+                Sql.Test1GetListHandCoded(count);
+            });
+            Console.WriteLine();
+
+            RunTest("Orbitfog.Core.Database.Mapper - first time", resultList, (int count) =>
             {
                 var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
             Console.WriteLine();
 
-            RunTest("OrbitfogCoreDatabaseMapper - second time", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.Mapper - second time", resultList, (int count) =>
+            {
+                var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
+            });
+            Console.WriteLine();
+
+            RunTest("Orbitfog.Core.Database.Mapper - third time", resultList, (int count) =>
             {
                 var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
@@ -62,6 +76,12 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             });
             Console.WriteLine();
 
+            RunTest("Dapper (Query<T>) - third time", resultList, (int count) =>
+            {
+                var x = Sql.Test1GetListDapper(count);
+            });
+            Console.WriteLine();
+
             Console.WriteLine("============================================================");
             Console.WriteLine();
             Console.WriteLine("Average time");
@@ -70,7 +90,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             Console.WriteLine("|:----|----:|----:|----:|----:|----:|");
             foreach (var item in resultList)
             {
-                Console.WriteLine("| " + item.Key + " | " + item.Value.Row10.TotalMilliseconds + " ms | " + item.Value.Row100.TotalMilliseconds + " ms | " + item.Value.Row1000.TotalMilliseconds + " ms  | " + item.Value.Row10000.TotalMilliseconds + " ms | " + item.Value.Row100000.TotalMilliseconds + " ms |");
+                Console.WriteLine("| " + item.Key + " | " + FormatMs(item.Value.Row10) + " | " + FormatMs(item.Value.Row100) + " | " + FormatMs(item.Value.Row1000) + "  | " + FormatMs(item.Value.Row10000) + " | " + FormatMs(item.Value.Row100000) + " |");
             }
 
             Console.WriteLine();
@@ -78,12 +98,17 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             Console.ReadKey();
         }
 
+        private static string FormatMs(TimeSpan ts)
+        {
+            return ts.TotalMilliseconds.ToString("0.00") + " ms";
+        }
+
         private static void RunTest(string testName, Dictionary<string, Result> resultList, Action<int> action)
         {
             var stoper = new Stopwatch();
 
             resultList.Add(testName, new Result());
-            action(1);
+            action(row1);
 
             //10
             GC.Collect();
@@ -96,7 +121,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 stoper.Stop();
 
                 resultList[testName].Row10 += stoper.Elapsed;
-                Console.WriteLine(testName + " 10: " + stoper.Elapsed.TotalMilliseconds + " ms");
+                Console.WriteLine(testName + " 10: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row10 = resultList[testName].Row10 / testCount;
 
@@ -111,7 +136,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 stoper.Stop();
 
                 resultList[testName].Row100 += stoper.Elapsed;
-                Console.WriteLine(testName + " 100: " + stoper.Elapsed.TotalMilliseconds + " ms");
+                Console.WriteLine(testName + " 100: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row100 = resultList[testName].Row100 / testCount;
 
@@ -126,7 +151,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 stoper.Stop();
 
                 resultList[testName].Row1000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 1000: " + stoper.Elapsed.TotalMilliseconds + " ms");
+                Console.WriteLine(testName + " 1000: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row1000 = resultList[testName].Row1000 / testCount;
 
@@ -141,7 +166,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 stoper.Stop();
 
                 resultList[testName].Row10000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 10000: " + stoper.Elapsed.TotalMilliseconds + " ms");
+                Console.WriteLine(testName + " 10000: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row10000 = resultList[testName].Row10000 / testCount;
 
@@ -156,7 +181,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 stoper.Stop();
 
                 resultList[testName].Row100000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 100000: " + stoper.Elapsed.TotalMilliseconds + " ms");
+                Console.WriteLine(testName + " 100000: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row100000 = resultList[testName].Row100000 / testCount;
         }

@@ -88,9 +88,12 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 
 | Name | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
 |:----|----:|----:|----:|----:|----:|
-| HandCoded - first time | 1,0776 ms | 1,2077 ms | 5,391 ms  | 53,6101 ms | 560,3239 ms |
-| HandCoded - second time | 0,5658 ms | 1,3117 ms | 5,3656 ms  | 53,275 ms | 581,3828 ms |
-| OrbitfogCoreDatabaseMapper - first time | 0,5618 ms | 1,2725 ms | 5,8555 ms  | 53,9275 ms | 566,7234 ms |
-| OrbitfogCoreDatabaseMapper - second time | 0,6159 ms | 1,3356 ms | 5,8459 ms  | 52,1557 ms | 590,8066 ms |
-| Dapper (Query<T>) - first time | 0,8099 ms | 1,3562 ms | 5,8828 ms  | 57,9416 ms | 664,3176 ms |
-| Dapper (Query<T>) - second time | 0,6125 ms | 1,334 ms | 5,4601 ms  | 59,8265 ms | 665,3886 ms |
+| Hand coded - first time | 1,05 ms | 1,36 ms | 5,35 ms  | 56,60 ms | 559,28 ms |
+| Hand coded - second time | 0,53 ms | 1,23 ms | 5,46 ms  | 50,76 ms | 573,83 ms |
+| Hand coded - third time | 0,56 ms | 1,37 ms | 5,63 ms  | 51,61 ms | 567,64 ms |
+| Orbitfog.Core.Database.Mapper - first time | 0,58 ms | 1,25 ms | 5,67 ms  | 56,07 ms | 576,55 ms |
+| Orbitfog.Core.Database.Mapper - second time | 0,58 ms | 1,33 ms | 5,23 ms  | 53,01 ms | 588,47 ms |
+| Orbitfog.Core.Database.Mapper - third time | 0,60 ms | 1,33 ms | 5,34 ms  | 52,98 ms | 570,83 ms |
+| Dapper (Query<T>) - first time | 0,77 ms | 1,40 ms | 5,96 ms  | 60,28 ms | 664,88 ms |
+| Dapper (Query<T>) - second time | 0,59 ms | 1,45 ms | 5,62 ms  | 59,74 ms | 667,55 ms |
+| Dapper (Query<T>) - third time | 0,65 ms | 1,32 ms | 5,84 ms  | 59,54 ms | 660,10 ms |
