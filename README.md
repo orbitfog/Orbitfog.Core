@@ -16,7 +16,7 @@ High-performance library base on `System.Linq.Expressions` to map `System.Data.C
     * DateTimeOffset
     * Guid
 
-This library give you possibility change existing code, with low performance, for an existing database framework. Only requirements is access to `DbDataReader` object.
+This library give you possibility change existing code, with low performance, for an existing database framework. Only requirement is access to `DbDataReader` object.
 
 NuGet package - [Orbitfog.Core.Database.Mapper](https://www.nuget.org/packages/Orbitfog.Core.Database.Mapper)
 
@@ -94,6 +94,6 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 | Orbitfog.Core.Database.Mapper - first time | 0,58 ms | 1,25 ms | 5,67 ms  | 56,07 ms | 576,55 ms |
 | Orbitfog.Core.Database.Mapper - second time | 0,58 ms | 1,33 ms | 5,23 ms  | 53,01 ms | 588,47 ms |
 | Orbitfog.Core.Database.Mapper - third time | 0,60 ms | 1,33 ms | 5,34 ms  | 52,98 ms | 570,83 ms |
-| Dapper (Query<T>) - first time | 0,77 ms | 1,40 ms | 5,96 ms  | 60,28 ms | 664,88 ms |
-| Dapper (Query<T>) - second time | 0,59 ms | 1,45 ms | 5,62 ms  | 59,74 ms | 667,55 ms |
-| Dapper (Query<T>) - third time | 0,65 ms | 1,32 ms | 5,84 ms  | 59,54 ms | 660,10 ms |
+| Dapper (Query&lt;T&gt;) - first time | 0,77 ms | 1,40 ms | 5,96 ms  | 60,28 ms | 664,88 ms |
+| Dapper (Query&lt;T&gt;) - second time | 0,59 ms | 1,45 ms | 5,62 ms  | 59,74 ms | 667,55 ms |
+| Dapper (Query&lt;T&gt;) - third time | 0,65 ms | 1,32 ms | 5,84 ms  | 59,54 ms | 660,10 ms |

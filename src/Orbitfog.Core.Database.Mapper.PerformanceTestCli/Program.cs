@@ -64,19 +64,19 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             });
             Console.WriteLine();
 
-            RunTest("Dapper (Query<T>) - first time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) - first time", resultList, (int count) =>
             {
                 var x = Sql.Test1GetListDapper(count);
             });
             Console.WriteLine();
 
-            RunTest("Dapper (Query<T>) - second time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) - second time", resultList, (int count) =>
             {
                 var x = Sql.Test1GetListDapper(count);
             });
             Console.WriteLine();
 
-            RunTest("Dapper (Query<T>) - third time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) - third time", resultList, (int count) =>
             {
                 var x = Sql.Test1GetListDapper(count);
             });
