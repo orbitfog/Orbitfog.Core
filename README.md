@@ -29,19 +29,25 @@ DbDataReaderMapperConfiguration.Default.UseProperties = true;
 DbDataReaderMapperConfiguration.Default.UseFields = true;
 ```
 
-You can initialize the class before execute `ToList()`, but it is not necessary:
+Initialize the class before execute `ToList()`, but it is not necessary:
 ```cs
 DbDataReaderMapper<SomeClass>.Initialize());
 ```
 
-Or changing behavior for the class:
+Changing behavior for the class:
+```cs
+DbDataReaderMapper<SomeClass>.Initialize(configuration =>
+{
+    configuration.CaseSensitive = false;
+});
+```
+or
 ```cs
 DbDataReaderMapper<SomeClass>.Initialize(new DbDataReaderMapperConfiguration()
 {
     CaseSensitive = false
 });
 ```
-
 
 ## Examples
 

@@ -48,6 +48,19 @@ namespace Orbitfog.Core.Database.Mapper
             toList.Value(null);
         }
 
+        public static void Initialize(Action<DbDataReaderMapperConfiguration> configuration)
+        {
+            toList = new Lazy<ToListHandle>(() =>
+            {
+                var configuration2 = new DbDataReaderMapperConfiguration();
+                configuration.Invoke(configuration2);
+
+                return InitializeToList(configuration2);
+            });
+
+            toList.Value(null);
+        }
+
         public static List<TResultItem> ToList(DbDataReader dbDataReader)
         {
             return toList.Value(dbDataReader);

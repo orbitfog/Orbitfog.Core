@@ -311,9 +311,9 @@ namespace Orbitfog.Core.Database.Mapper.UnitTests
                 .AddColumn(typeof(int), "IntVALUE2", ++i),
             };
 
-            DbDataReaderMapper<ClassD>.Initialize(new DbDataReaderMapperConfiguration()
+            DbDataReaderMapper<ClassD>.Initialize(configuration =>
             {
-                CaseSensitive = false
+                configuration.CaseSensitive = false;
             });
 
             var list = DbDataReaderMapper<ClassD>.ToList(new FakeDbDataReader(fakeDatabaseDataList));
