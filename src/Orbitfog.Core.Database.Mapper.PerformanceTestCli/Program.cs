@@ -30,57 +30,63 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
 
             RunTest("Hand coded - first time", resultList, (int count) =>
             {
-                Sql.Test1GetListHandCoded(count);
+                SqlQuery.Test1GetListHandCoded(count);
             });
-            Console.WriteLine();
 
             RunTest("Hand coded - second time", resultList, (int count) =>
             {
-                Sql.Test1GetListHandCoded(count);
+                SqlQuery.Test1GetListHandCoded(count);
             });
-            Console.WriteLine();
 
             RunTest("Hand coded - third time", resultList, (int count) =>
             {
-                Sql.Test1GetListHandCoded(count);
+                SqlQuery.Test1GetListHandCoded(count);
             });
-            Console.WriteLine();
 
             RunTest("Orbitfog.Core.Database.Mapper - first time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
+                var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
-            Console.WriteLine();
 
             RunTest("Orbitfog.Core.Database.Mapper - second time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
+                var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
-            Console.WriteLine();
 
             RunTest("Orbitfog.Core.Database.Mapper - third time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListOrbitfogCoreDatabaseMapper(count);
+                var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
-            Console.WriteLine();
 
             RunTest("Dapper (Query&lt;T&gt;) - first time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListDapper(count);
+                var x = SqlQuery.Test1GetListDapper(count);
             });
-            Console.WriteLine();
 
             RunTest("Dapper (Query&lt;T&gt;) - second time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListDapper(count);
+                var x = SqlQuery.Test1GetListDapper(count);
             });
-            Console.WriteLine();
 
             RunTest("Dapper (Query&lt;T&gt;) - third time", resultList, (int count) =>
             {
-                var x = Sql.Test1GetListDapper(count);
+                var x = SqlQuery.Test1GetListDapper(count);
             });
-            Console.WriteLine();
+
+            RunTest("EntityFrameworkCore - first time", resultList, (int count) =>
+            {
+                var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
+            });
+
+            RunTest("EntityFrameworkCore - second time", resultList, (int count) =>
+            {
+                var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
+            });
+
+            RunTest("EntityFrameworkCore - third time", resultList, (int count) =>
+            {
+                var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
+            });
 
             Console.WriteLine("============================================================");
             Console.WriteLine();
@@ -108,7 +114,11 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             var stoper = new Stopwatch();
 
             resultList.Add(testName, new Result());
+
+            //initialize
             action(row1);
+            action(row10);
+            action(row100);
 
             //10
             GC.Collect();
@@ -184,6 +194,8 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 Console.WriteLine(testName + " 100000: " + FormatMs(stoper.Elapsed));
             }
             resultList[testName].Row100000 = resultList[testName].Row100000 / testCount;
+
+            Console.WriteLine();
         }
     }
 }

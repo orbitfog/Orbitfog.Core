@@ -84,16 +84,19 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 * Generate sql file by running `Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli` and execute file on local database, this create table `[dbo].[Test1]` with 100 000 rows.
 * Build `Orbitfog.Core.Database.Mapper.PerformanceTestCli` as `Release` and run from `Visual Studio`: `Debug` > `Start Without Debugging`
 
-### Results for `.NET Core 3.1` on Windows, average time for 5 executions:
+### Results for `.NET Core 3.1` on Windows, in each the table cell the time is average for 5 executions:
 
 | Name | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
 |:----|----:|----:|----:|----:|----:|
-| Hand coded - first time | 1,05 ms | 1,36 ms | 5,35 ms  | 56,60 ms | 559,28 ms |
-| Hand coded - second time | 0,53 ms | 1,23 ms | 5,46 ms  | 50,76 ms | 573,83 ms |
-| Hand coded - third time | 0,56 ms | 1,37 ms | 5,63 ms  | 51,61 ms | 567,64 ms |
-| Orbitfog.Core.Database.Mapper - first time | 0,58 ms | 1,25 ms | 5,67 ms  | 56,07 ms | 576,55 ms |
-| Orbitfog.Core.Database.Mapper - second time | 0,58 ms | 1,33 ms | 5,23 ms  | 53,01 ms | 588,47 ms |
-| Orbitfog.Core.Database.Mapper - third time | 0,60 ms | 1,33 ms | 5,34 ms  | 52,98 ms | 570,83 ms |
-| Dapper (Query&lt;T&gt;) - first time | 0,77 ms | 1,40 ms | 5,96 ms  | 60,28 ms | 664,88 ms |
-| Dapper (Query&lt;T&gt;) - second time | 0,59 ms | 1,45 ms | 5,62 ms  | 59,74 ms | 667,55 ms |
-| Dapper (Query&lt;T&gt;) - third time | 0,65 ms | 1,32 ms | 5,84 ms  | 59,54 ms | 660,10 ms |
+| Hand coded - first time | 0,54 ms | 1,49 ms | 5,54 ms  | 55,10 ms | 549,21 ms |
+| Hand coded - second time | 0,56 ms | 1,27 ms | 5,46 ms  | 51,73 ms | 560,45 ms |
+| Hand coded - third time | 0,57 ms | 1,47 ms | 5,17 ms  | 51,04 ms | 571,53 ms |
+| Orbitfog.Core.Database.Mapper - first time | 0,56 ms | 1,25 ms | 6,40 ms  | 51,93 ms | 565,95 ms |
+| Orbitfog.Core.Database.Mapper - second time | 0,58 ms | 1,35 ms | 5,65 ms  | 54,32 ms | 576,64 ms |
+| Orbitfog.Core.Database.Mapper - third time | 0,61 ms | 1,19 ms | 5,48 ms  | 51,98 ms | 592,00 ms |
+| Dapper (Query&lt;T&gt;) - first time | 0,62 ms | 1,30 ms | 5,63 ms  | 58,99 ms | 658,86 ms |
+| Dapper (Query&lt;T&gt;) - second time | 0,61 ms | 1,24 ms | 5,66 ms  | 59,88 ms | 664,18 ms |
+| Dapper (Query&lt;T&gt;) - third time | 0,58 ms | 1,18 ms | 5,51 ms  | 59,62 ms | 662,71 ms |
+| EntityFrameworkCore - first time | 0,67 ms | 1,97 ms | 11,06 ms  | 115,08 ms | 1153,78 ms |
+| EntityFrameworkCore - second time | 0,60 ms | 1,74 ms | 8,72 ms  | 106,42 ms | 1158,19 ms |
+| EntityFrameworkCore - third time | 0,59 ms | 1,72 ms | 8,54 ms  | 106,12 ms | 1149,45 ms |

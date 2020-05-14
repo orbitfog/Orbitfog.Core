@@ -10,8 +10,7 @@ namespace Orbitfog.Core.Database.Mapper
     public class DbDataReaderMapper<TResultItem>
     {
         private static readonly MethodInfo List_Add = typeof(List<TResultItem>).GetMethod(nameof(List<TResultItem>.Add), new Type[] { typeof(TResultItem) });
-        private static readonly MethodInfo DbDataReaderMapper_GetAllowDbNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetAllowDbNullList), BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly MethodInfo DbDataReaderMapper_AllowDBNull = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(AllowDBNull), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo DbDataReaderMapper_GetNotCheckNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetNotCheckNullList), BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo DbDataReaderMapper_GetName = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetName), BindingFlags.NonPublic | BindingFlags.Static);
 
         private delegate List<TResultItem> ToListHandle(DbDataReader dbDataReader);
@@ -65,39 +64,30 @@ namespace Orbitfog.Core.Database.Mapper
             var rowList = Expression.Variable(returnType, "rowList");
             var dbDataReader = Expression.Parameter(typeof(DbDataReader), "dbDataReader");
             var readerMap = Expression.Variable(typeof(int[]), "readerMap");
-            var columnSchema = Expression.Variable(typeof(Dictionary<int, DbColumn>), "columnSchema");
-            var checkNulls = Expression.Variable(typeof(bool[]), "checkNulls");
+            var notCheckNullList = Expression.Variable(typeof(bool[]), "notCheckNullList");
             var i = Expression.Variable(typeof(int), "i");
 
             var expression = Expression.Block(
-                                                new[] { rowList, readerMap, columnSchema, checkNulls, i },
+                                                new[] { rowList, readerMap, notCheckNullList, i },
                                                 Expression.Assign(rowList, Expression.New(returnType)),
                                                 Expression.IfThen(
                                                     Expression.NotEqual(dbDataReader, Expression.Constant(null)),
                                                     Expression.Block(
-                                                        Expression.Assign(
-                                                            columnSchema,
-                                                            Expression.Call(null, DbDataReaderMapper_GetAllowDbNullList, dbDataReader)
-                                                        ),
                                                         Expression.IfThen(
                                                             Expression.Call(dbDataReader, DbDataReaderDefinitions.get_HasRows),
                                                             Expression.Block(
                                                                 Expression.Assign(readerMap, Expression.NewArrayBounds(typeof(int), Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount))),
-                                                                Expression.Assign(checkNulls, Expression.NewArrayBounds(typeof(bool), Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount))),
+                                                                Expression.Assign(notCheckNullList, Expression.Call(null, DbDataReaderMapper_GetNotCheckNullList, dbDataReader)),
                                                                 For(
                                                                     i,
                                                                     Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
                                                                     Expression.Block(
-                                                                        Expression.Assign(
-                                                                            Expression.ArrayAccess(checkNulls, i),
-                                                                            Expression.Call(null, DbDataReaderMapper_AllowDBNull, columnSchema, i)
-                                                                        ),
                                                                         BuildInitSwitch(dbDataReader, i, readerMap, itmList, configuration)
                                                                     )
                                                                 ),
                                                                 While(
                                                                     Expression.Call(dbDataReader, DbDataReaderDefinitions.Read),
-                                                                    BuildReadRow(dbDataReader, rowList, checkNulls, readerMap, itmList)
+                                                                    BuildReadRow(dbDataReader, rowList, notCheckNullList, readerMap, itmList)
                                                                 )
                                                             )
                                                         )
@@ -208,7 +198,7 @@ namespace Orbitfog.Core.Database.Mapper
             return switchExpression;
         }
 
-        private static Expression BuildReadRow(ParameterExpression dbDataReader, ParameterExpression rowList, ParameterExpression checkNulls, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
+        private static Expression BuildReadRow(ParameterExpression dbDataReader, ParameterExpression rowList, ParameterExpression notCheckNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
         {
             var obj = Expression.Parameter(typeof(TResultItem), "obj");
             var i = Expression.Variable(typeof(int), "i");
@@ -219,13 +209,13 @@ namespace Orbitfog.Core.Database.Mapper
                                         For(
                                             i,
                                             Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
-                                            BuildReadRowSwitch(dbDataReader, i, obj, checkNulls, readerMap, itemList)
+                                            BuildReadRowSwitch(dbDataReader, i, obj, notCheckNullList, readerMap, itemList)
                                         ),
                                         Expression.Call(rowList, List_Add, obj)
                                     );
         }
 
-        private static Expression BuildReadRowSwitch(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression checkNulls, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
+        private static Expression BuildReadRowSwitch(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression notCheckNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
         {
             if (itemList.Count <= 0)
             {
@@ -240,7 +230,7 @@ namespace Orbitfog.Core.Database.Mapper
                 switchCaseList.Add(
                         Expression.SwitchCase(
                             Expression.Block(
-                                BuildReadRowCase(dbDataReader, i, obj, checkNulls, item),
+                                BuildReadRowCase(dbDataReader, i, obj, notCheckNullList, item),
                                 Expression.Break(breakLabel)
                             ),
                             Expression.Constant(item.Code)
@@ -260,53 +250,35 @@ namespace Orbitfog.Core.Database.Mapper
             return switchExpression;
         }
 
-        private static Expression BuildReadRowCase(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression checkNulls, DbDataReaderMapperItem item)
+        private static Expression BuildReadRowCase(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression notCheckNullList, DbDataReaderMapperItem item)
         {
-            return Expression.IfThenElse(
+            return Expression.IfThen(
                                             Expression.AndAlso(
-                                                Expression.ArrayAccess(checkNulls, i),
-                                                Expression.Call(dbDataReader, DbDataReaderDefinitions.IsDBNull, i)
+                                                Expression.ArrayAccess(notCheckNullList, i),
+                                                Expression.Not(Expression.Call(dbDataReader, DbDataReaderDefinitions.IsDBNull, i))
                                             ),
-                                            item is DbDataReaderMapperProperty ? BuildReadRowCaseIfTrue(obj, (DbDataReaderMapperProperty)item) : BuildReadRowCaseIfTrue(obj, (DbDataReaderMapperField)item),
-                                            item is DbDataReaderMapperProperty ? BuildReadRowCaseIfFalse(dbDataReader, i, obj, (DbDataReaderMapperProperty)item) : BuildReadRowCaseIfFalse(dbDataReader, i, obj, (DbDataReaderMapperField)item)
+                                            item is DbDataReaderMapperProperty ? BuildReadRowCaseSetValue(dbDataReader, i, obj, (DbDataReaderMapperProperty)item) : BuildReadRowCaseSetValue(dbDataReader, i, obj, (DbDataReaderMapperField)item)
                                          );
         }
 
-        private static Expression BuildReadRowCaseIfTrue(ParameterExpression obj, DbDataReaderMapperProperty property)
+        private static Expression BuildReadRowCaseSetValue(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, DbDataReaderMapperProperty property)
         {
             return Expression.Call(
                                         obj,
                                         property.SetMethod,
-                                        ConvertNull(property.ItemType, property.IsNullable)
+                                        BuildReadRowCaseGetValue(dbDataReader, i, property)
                                     );
         }
 
-        private static Expression BuildReadRowCaseIfTrue(ParameterExpression obj, DbDataReaderMapperField field)
+        private static Expression BuildReadRowCaseSetValue(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, DbDataReaderMapperField field)
         {
             return Expression.Assign(
                                         Expression.Field(obj, field.FieldInfo),
-                                        ConvertNull(field.ItemType, field.IsNullable)
+                                        BuildReadRowCaseGetValue(dbDataReader, i, field)
                                     );
         }
 
-        private static Expression BuildReadRowCaseIfFalse(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, DbDataReaderMapperProperty property)
-        {
-            return Expression.Call(
-                                        obj,
-                                        property.SetMethod,
-                                        NewMethod(dbDataReader, i, property)
-                                    );
-        }
-
-        private static Expression BuildReadRowCaseIfFalse(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, DbDataReaderMapperField field)
-        {
-            return Expression.Assign(
-                                        Expression.Field(obj, field.FieldInfo),
-                                        NewMethod(dbDataReader, i, field)
-                                    );
-        }
-
-        private static Expression NewMethod(ParameterExpression dbDataReader, ParameterExpression i, DbDataReaderMapperItem item)
+        private static Expression BuildReadRowCaseGetValue(ParameterExpression dbDataReader, ParameterExpression i, DbDataReaderMapperItem item)
         {
             return (
                         item.DbDataReader_GetValue_MethodInfo == DbDataReaderDefinitions.GetValue || item.IsValueTypeNullable || item.IsValueTypeEnum ?
@@ -330,31 +302,31 @@ namespace Orbitfog.Core.Database.Mapper
             }
         }
 
-        private static Dictionary<int, DbColumn> GetAllowDbNullList(DbDataReader dbDataReader)
+        private static bool[] GetNotCheckNullList(DbDataReader dbDataReader)
         {
+            var resultList = new bool[dbDataReader.FieldCount];
+            for (int i = 0; i < resultList.Length; i++)
+            {
+                resultList[i] = true;
+            }
+
             if (dbDataReader.CanGetColumnSchema())
             {
                 var columnSchema = dbDataReader.GetColumnSchema();
                 if (columnSchema.Count > 0)
                 {
-                    return columnSchema.ToList()
-                                .FindAll(p => p.ColumnOrdinal.HasValue && p.AllowDBNull.HasValue)
-                                .ToDictionary(p => p.ColumnOrdinal.Value);
+                    for (int i = 0; i < columnSchema.Count; i++)
+                    {
+                        var dbColumn = columnSchema[i];
+                        if (dbColumn.ColumnOrdinal.HasValue && dbColumn.AllowDBNull.HasValue)
+                        {
+                            resultList[dbColumn.ColumnOrdinal.Value] = !dbColumn.AllowDBNull.Value;
+                        }
+                    }
                 }
             }
-            return new Dictionary<int, DbColumn>();
-        }
 
-        private static bool AllowDBNull(Dictionary<int, DbColumn> columnSchema, int i)
-        {
-            if (columnSchema.TryGetValue(i, out DbColumn dbColumn) && dbColumn != null && dbColumn.AllowDBNull.HasValue)
-            {
-                return dbColumn.AllowDBNull.Value;
-            }
-            else
-            {
-                return true;
-            }
+            return resultList;
         }
 
         private static bool ValidateProperty(PropertyInfo pi, MethodInfo mi)
