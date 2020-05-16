@@ -28,62 +28,62 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
         {
             var resultList = new Dictionary<string, Result>();
 
-            RunTest("Hand coded - first time", resultList, (int count) =>
+            RunTest("Hand coded #1", resultList, (int count) =>
             {
                 SqlQuery.Test1GetListHandCoded(count);
             });
 
-            RunTest("Hand coded - second time", resultList, (int count) =>
+            RunTest("Hand coded #2", resultList, (int count) =>
             {
                 SqlQuery.Test1GetListHandCoded(count);
             });
 
-            RunTest("Hand coded - third time", resultList, (int count) =>
+            RunTest("Hand coded #3", resultList, (int count) =>
             {
                 SqlQuery.Test1GetListHandCoded(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper - first time", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.Mapper #1", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper - second time", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.Mapper #2", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper - third time", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.Mapper #3", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
 
-            RunTest("Dapper (Query&lt;T&gt;) - first time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) #1", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListDapper(count);
             });
 
-            RunTest("Dapper (Query&lt;T&gt;) - second time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) #2", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListDapper(count);
             });
 
-            RunTest("Dapper (Query&lt;T&gt;) - third time", resultList, (int count) =>
+            RunTest("Dapper (Query&lt;T&gt;) #3", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListDapper(count);
             });
 
-            RunTest("EntityFrameworkCore - first time", resultList, (int count) =>
+            RunTest("EntityFrameworkCore #1", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
             });
 
-            RunTest("EntityFrameworkCore - second time", resultList, (int count) =>
+            RunTest("EntityFrameworkCore #2", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
             });
 
-            RunTest("EntityFrameworkCore - third time", resultList, (int count) =>
+            RunTest("EntityFrameworkCore #3", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListEntityFrameworkCore(count);
             });
@@ -92,7 +92,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             Console.WriteLine();
             Console.WriteLine("Average time");
             Console.WriteLine("");
-            Console.WriteLine("| Name | 1 rows | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |");
+            Console.WriteLine("| Name | 1 row | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |");
             Console.WriteLine("|:----|----:|----:|----:|----:|----:|----:|");
             foreach (var item in resultList)
             {
@@ -133,13 +133,13 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
 
         private static TimeSpan RunTest(string testName, int rowCount, Action<int> action)
         {
-            GC.Collect();
-
             var stoper = new Stopwatch();
             var ts = new TimeSpan();
 
             for (int i = 0; i < testCount; ++i)
             {
+                GC.Collect();
+
                 stoper.Stop();
                 stoper.Reset();
                 stoper.Start();

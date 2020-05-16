@@ -92,17 +92,17 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 
 ### Results for `.NET Core 3.1` on Windows, in each the table cell the time is average for 5 executions:
 
-| Name | 1 rows | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
+| Name | 1 row | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
 |:----|----:|----:|----:|----:|----:|----:|
-| Hand coded - first time | 0,28 ms | 0,50 ms | 1,44 ms | 7,29 ms  | 60,69 ms | 558,30 ms |
-| Hand coded - second time | 0,32 ms | 0,51 ms | 1,34 ms | 5,27 ms  | 51,84 ms | 544,68 ms |
-| Hand coded - third time | 0,24 ms | 0,46 ms | 1,33 ms | 5,07 ms  | 52,93 ms | 544,37 ms |
-| Orbitfog.Core.Database.Mapper - first time | 0,31 ms | 0,72 ms | 1,50 ms | 5,52 ms  | 53,69 ms | 567,25 ms |
-| Orbitfog.Core.Database.Mapper - second time | 0,27 ms | 0,59 ms | 1,25 ms | 5,40 ms  | 56,15 ms | 569,77 ms |
-| Orbitfog.Core.Database.Mapper - third time | 0,24 ms | 0,62 ms | 1,22 ms | 5,84 ms  | 52,10 ms | 581,92 ms |
-| Dapper (Query&lt;T&gt;) - first time | 0,31 ms | 0,50 ms | 1,31 ms | 5,49 ms  | 57,45 ms | 645,54 ms |
-| Dapper (Query&lt;T&gt;) - second time | 0,30 ms | 0,48 ms | 1,26 ms | 5,36 ms  | 57,76 ms | 644,89 ms |
-| Dapper (Query&lt;T&gt;) - third time | 0,24 ms | 0,50 ms | 1,28 ms | 5,44 ms  | 59,18 ms | 649,85 ms |
-| EntityFrameworkCore - first time | 0,59 ms | 0,69 ms | 2,19 ms | 11,07 ms  | 121,46 ms | 1143,19 ms |
-| EntityFrameworkCore - second time | 0,55 ms | 0,60 ms | 2,23 ms | 8,79 ms  | 106,23 ms | 1135,70 ms |
-| EntityFrameworkCore - third time | 0,53 ms | 0,52 ms | 1,94 ms | 8,30 ms  | 105,59 ms | 1133,82 ms |
+| Hand coded #1 | 0,36 ms | 0,63 ms | 1,57 ms | 6,01 ms  | 52,33 ms | 500,29 ms |
+| Hand coded #2 | 0,31 ms | 0,51 ms | 1,34 ms | 4,95 ms  | 47,32 ms | 499,53 ms |
+| Hand coded #3 | 0,25 ms | 0,54 ms | 1,22 ms | 5,34 ms  | 47,07 ms | 503,77 ms |
+| Orbitfog.Core.Database.Mapper #1 | 0,33 ms | 0,50 ms | 1,42 ms | 5,26 ms  | 48,12 ms | 516,73 ms |
+| Orbitfog.Core.Database.Mapper #2 | 0,28 ms | 0,51 ms | 1,05 ms | 5,39 ms  | 51,58 ms | 518,43 ms |
+| Orbitfog.Core.Database.Mapper #3 | 0,23 ms | 0,48 ms | 1,19 ms | 5,33 ms  | 51,14 ms | 517,37 ms |
+| Dapper (Query&lt;T&gt;) #1 | 0,33 ms | 0,52 ms | 1,42 ms | 5,55 ms  | 53,18 ms | 575,03 ms |
+| Dapper (Query&lt;T&gt;) #2 | 0,26 ms | 0,53 ms | 1,49 ms | 5,41 ms  | 53,91 ms | 571,44 ms |
+| Dapper (Query&lt;T&gt;) #3 | 0,31 ms | 0,61 ms | 1,29 ms | 5,63 ms  | 54,23 ms | 563,39 ms |
+| EntityFrameworkCore #1 | 0,71 ms | 0,79 ms | 2,34 ms | 11,24 ms  | 113,58 ms | 1037,12 ms |
+| EntityFrameworkCore #2 | 0,59 ms | 0,68 ms | 1,97 ms | 8,44 ms  | 89,56 ms | 1034,05 ms |
+| EntityFrameworkCore #3 | 0,60 ms | 0,72 ms | 1,96 ms | 7,94 ms  | 88,14 ms | 1046,98 ms |
