@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Orbitfog.Core.Database.Mapper
+namespace Orbitfog.Core.Database.DataReaderMapper
 {
     internal class DbDataReaderMapperProperty : DbDataReaderMapperItem
     {

@@ -4,11 +4,11 @@ using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 
-namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
+namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli
 {
     public class SqlQuery
     {
-        public static string ConnectionString { get; } = "Data Source=localhost; Initial Catalog=Orbitfog.Core.Database.Mapper.PerformanceTestCli; Integrated Security=true;";
+        public static string ConnectionString { get; } = "Data Source=localhost; Initial Catalog=Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli; Integrated Security=true;";
 
         private static string GetCommandText(int count)
         {

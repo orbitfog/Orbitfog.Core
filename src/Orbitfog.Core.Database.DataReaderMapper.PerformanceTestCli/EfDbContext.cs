@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
+namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli
 {
     public class EfDbContext : DbContext
     {

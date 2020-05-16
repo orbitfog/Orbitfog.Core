@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
+namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli
 {
     class Program
     {
@@ -43,17 +43,17 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
                 SqlQuery.Test1GetListHandCoded(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper #1", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.DataReaderMapper #1", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper #2", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.DataReaderMapper #2", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });
 
-            RunTest("Orbitfog.Core.Database.Mapper #3", resultList, (int count) =>
+            RunTest("Orbitfog.Core.Database.DataReaderMapper #3", resultList, (int count) =>
             {
                 var x = SqlQuery.Test1GetListOrbitfogCoreDatabaseMapper(count);
             });

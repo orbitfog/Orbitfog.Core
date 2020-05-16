@@ -19,7 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Orbitfog.Core.Database.Mapper\Orbitfog.Core.Database.Mapper.csproj" />
+    <ProjectReference Include="..\Orbitfog.Core.Database.DataReaderMapper\Orbitfog.Core.Database.DataReaderMapper.csproj" />
   </ItemGroup>
 
 </Project>

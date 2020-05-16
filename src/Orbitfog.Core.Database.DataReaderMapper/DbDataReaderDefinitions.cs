@@ -2,7 +2,7 @@
 using System.Data.Common;
 using System.Reflection;
 
-namespace Orbitfog.Core.Database.Mapper
+namespace Orbitfog.Core.Database.DataReaderMapper
 {
     internal static class DbDataReaderDefinitions
     {

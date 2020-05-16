@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
+namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli
 {
     public class Test1
     {

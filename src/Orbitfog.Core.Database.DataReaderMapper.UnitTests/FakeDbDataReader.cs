@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 
-namespace Orbitfog.Core.Database.Mapper.UnitTests
+namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 {
     public class FakeDbDataReader : DbDataReader
     {

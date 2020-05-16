@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace Orbitfog.Core.Database.Mapper.PerformanceDataGeneratorCli
+namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceDataGeneratorCli
 {
     class Program
     {

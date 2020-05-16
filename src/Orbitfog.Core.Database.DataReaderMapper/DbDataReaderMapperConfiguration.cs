@@ -1,4 +1,4 @@
-﻿namespace Orbitfog.Core.Database.Mapper
+﻿namespace Orbitfog.Core.Database.DataReaderMapper
 {
     public class DbDataReaderMapperConfiguration
     {
