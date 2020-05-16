@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 
 namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
@@ -17,6 +16,7 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
 
         private class Result
         {
+            public TimeSpan Row1 { get; set; }
             public TimeSpan Row10 { get; set; }
             public TimeSpan Row100 { get; set; }
             public TimeSpan Row1000 { get; set; }
@@ -92,11 +92,11 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             Console.WriteLine();
             Console.WriteLine("Average time");
             Console.WriteLine("");
-            Console.WriteLine("| Name | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |");
-            Console.WriteLine("|:----|----:|----:|----:|----:|----:|");
+            Console.WriteLine("| Name | 1 rows | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |");
+            Console.WriteLine("|:----|----:|----:|----:|----:|----:|----:|");
             foreach (var item in resultList)
             {
-                Console.WriteLine("| " + item.Key + " | " + FormatMs(item.Value.Row10) + " | " + FormatMs(item.Value.Row100) + " | " + FormatMs(item.Value.Row1000) + "  | " + FormatMs(item.Value.Row10000) + " | " + FormatMs(item.Value.Row100000) + " |");
+                Console.WriteLine("| " + item.Key + " | " + FormatMs(item.Value.Row1) + " | " + FormatMs(item.Value.Row10) + " | " + FormatMs(item.Value.Row100) + " | " + FormatMs(item.Value.Row1000) + "  | " + FormatMs(item.Value.Row10000) + " | " + FormatMs(item.Value.Row100000) + " |");
             }
 
             Console.WriteLine();
@@ -120,82 +120,38 @@ namespace Orbitfog.Core.Database.Mapper.PerformanceTestCli
             action(row10);
             action(row100);
 
-            //10
-            GC.Collect();
-            for (int i = 0; i < testCount; ++i)
-            {
-                stoper.Stop();
-                stoper.Reset();
-                stoper.Start();
-                action(row10);
-                stoper.Stop();
-
-                resultList[testName].Row10 += stoper.Elapsed;
-                Console.WriteLine(testName + " 10: " + FormatMs(stoper.Elapsed));
-            }
-            resultList[testName].Row10 = resultList[testName].Row10 / testCount;
-
-            //100
-            GC.Collect();
-            for (int i = 0; i < testCount; ++i)
-            {
-                stoper.Stop();
-                stoper.Reset();
-                stoper.Start();
-                action(row100);
-                stoper.Stop();
-
-                resultList[testName].Row100 += stoper.Elapsed;
-                Console.WriteLine(testName + " 100: " + FormatMs(stoper.Elapsed));
-            }
-            resultList[testName].Row100 = resultList[testName].Row100 / testCount;
-
-            //1000
-            GC.Collect();
-            for (int i = 0; i < testCount; ++i)
-            {
-                stoper.Stop();
-                stoper.Reset();
-                stoper.Start();
-                action(row1000);
-                stoper.Stop();
-
-                resultList[testName].Row1000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 1000: " + FormatMs(stoper.Elapsed));
-            }
-            resultList[testName].Row1000 = resultList[testName].Row1000 / testCount;
-
-            //10000
-            GC.Collect();
-            for (int i = 0; i < testCount; ++i)
-            {
-                stoper.Stop();
-                stoper.Reset();
-                stoper.Start();
-                action(row10000);
-                stoper.Stop();
-
-                resultList[testName].Row10000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 10000: " + FormatMs(stoper.Elapsed));
-            }
-            resultList[testName].Row10000 = resultList[testName].Row10000 / testCount;
-
-            //100000
-            GC.Collect();
-            for (int i = 0; i < testCount; ++i)
-            {
-                stoper.Stop();
-                stoper.Reset();
-                stoper.Start();
-                action(row100000);
-                stoper.Stop();
-
-                resultList[testName].Row100000 += stoper.Elapsed;
-                Console.WriteLine(testName + " 100000: " + FormatMs(stoper.Elapsed));
-            }
-            resultList[testName].Row100000 = resultList[testName].Row100000 / testCount;
+            //tests
+            resultList[testName].Row1 = RunTest(testName, row1, action);
+            resultList[testName].Row10 = RunTest(testName, row10, action);
+            resultList[testName].Row100 = RunTest(testName, row100, action);
+            resultList[testName].Row1000 = RunTest(testName, row1000, action);
+            resultList[testName].Row10000 = RunTest(testName, row10000, action);
+            resultList[testName].Row100000 = RunTest(testName, row100000, action);
 
             Console.WriteLine();
+        }
+
+        private static TimeSpan RunTest(string testName, int rowCount, Action<int> action)
+        {
+            GC.Collect();
+
+            var stoper = new Stopwatch();
+            var ts = new TimeSpan();
+
+            for (int i = 0; i < testCount; ++i)
+            {
+                stoper.Stop();
+                stoper.Reset();
+                stoper.Start();
+                action(rowCount);
+                stoper.Stop();
+
+                ts += stoper.Elapsed;
+                Console.WriteLine($"{testName} {rowCount}: {FormatMs(stoper.Elapsed)}");
+            }
+            ts /= testCount;
+
+            return ts;
         }
     }
 }
