@@ -90,19 +90,19 @@ List<SomeEnum> list = DbDataReaderMapper<SomeEnum>.ToList(command.ExecuteReader(
 * Generate sql file by running `Orbitfog.Core.Database.DataReaderMapper.PerformanceDataGeneratorCli` and execute file on local database, this create table `[dbo].[Test1]` with 100 000 rows.
 * Build `Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli` as `Release` and run from `Visual Studio`: `Debug` > `Start Without Debugging`
 
-### Results for `.NET Core 3.1` on Windows, in each the table cell the time is average for 5 executions:
+### Results for `.NET Core 3.1` on Windows, in each the table cell the time is average for 5 executions in milliseconds:
 
 | Name | 1 row | 10 rows | 100 rows | 1000 rows | 10000 rows | 100000 rows |
 |:----|----:|----:|----:|----:|----:|----:|
-| Hand coded #1 | 0,36 ms | 0,57 ms | 1,55 ms | 6,18 ms  | 52,77 ms | 505,48 ms |
-| Hand coded #2 | 0,28 ms | 0,57 ms | 1,32 ms | 4,96 ms  | 50,20 ms | 494,59 ms |
-| Hand coded #3 | 0,27 ms | 0,46 ms | 1,01 ms | 5,09 ms  | 48,26 ms | 488,88 ms |
-| Orbitfog.Core.Database.DataReaderMapper #1 | 0,28 ms | 0,61 ms | 1,26 ms | 5,57 ms  | 47,80 ms | 518,63 ms |
-| Orbitfog.Core.Database.DataReaderMapper #2 | 0,26 ms | 0,47 ms | 1,33 ms | 5,23 ms  | 50,94 ms | 510,47 ms |
-| Orbitfog.Core.Database.DataReaderMapper #3 | 0,26 ms | 0,48 ms | 1,39 ms | 5,32 ms  | 50,50 ms | 516,07 ms |
-| Dapper (Query&lt;T&gt;) #1 | 0,34 ms | 0,49 ms | 1,42 ms | 5,17 ms  | 54,72 ms | 580,08 ms |
-| Dapper (Query&lt;T&gt;) #2 | 0,30 ms | 0,50 ms | 1,14 ms | 5,12 ms  | 54,00 ms | 571,03 ms |
-| Dapper (Query&lt;T&gt;) #3 | 0,26 ms | 0,52 ms | 1,40 ms | 5,27 ms  | 52,93 ms | 578,99 ms |
-| EntityFrameworkCore #1 | 0,68 ms | 0,73 ms | 2,26 ms | 11,43 ms  | 112,14 ms | 1058,86 ms |
-| EntityFrameworkCore #2 | 0,68 ms | 0,64 ms | 1,91 ms | 7,99 ms  | 88,06 ms | 1053,86 ms |
-| EntityFrameworkCore #3 | 0,71 ms | 0,65 ms | 1,99 ms | 8,59 ms  | 91,86 ms | 1081,14 ms |
+| Hand coded #1 | 0,32 | 0,50 | 1,38 | 5,45  | 49,76 | 501,90 |
+| Hand coded #2 | 0,27 | 0,47 | 1,07 | 4,86  | 48,41 | 497,81 |
+| Hand coded #3 | 0,29 | 0,65 | 1,26 | 5,46  | 48,88 | 496,11 |
+| Orbitfog.Core.Database.DataReaderMapper #1 | 0,31 | 0,53 | 1,47 | 5,19  | 48,40 | 519,09 |
+| Orbitfog.Core.Database.DataReaderMapper #2 | 0,26 | 0,48 | 1,27 | 5,22  | 51,07 | 511,52 |
+| Orbitfog.Core.Database.DataReaderMapper #3 | 0,29 | 0,55 | 1,28 | 5,90  | 49,23 | 510,11 |
+| Dapper (Query&lt;T&gt;) #1 | 0,36 | 0,55 | 1,38 | 5,39  | 53,91 | 574,09 |
+| Dapper (Query&lt;T&gt;) #2 | 0,33 | 0,53 | 1,31 | 5,34  | 54,41 | 581,21 |
+| Dapper (Query&lt;T&gt;) #3 | 0,31 | 0,49 | 1,10 | 5,10  | 53,42 | 573,75 |
+| EntityFrameworkCore #1 | 0,76 | 0,79 | 2,29 | 10,92  | 119,98 | 1060,14 |
+| EntityFrameworkCore #2 | 0,65 | 0,67 | 1,78 | 8,23  | 87,84 | 1078,68 |
+| EntityFrameworkCore #3 | 0,78 | 0,75 | 1,95 | 8,68  | 93,47 | 1100,92 |

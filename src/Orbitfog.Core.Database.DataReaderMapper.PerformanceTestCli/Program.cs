@@ -106,7 +106,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.PerformanceTestCli
 
         private static string FormatMs(TimeSpan ts)
         {
-            return ts.TotalMilliseconds.ToString("0.00") + " ms";
+            return ts.TotalMilliseconds.ToString("0.00");
         }
 
         private static void RunTest(string testName, Dictionary<string, Result> resultList, Action<int> action)
