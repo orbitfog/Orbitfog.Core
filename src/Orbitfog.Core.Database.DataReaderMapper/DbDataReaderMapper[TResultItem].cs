@@ -9,7 +9,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
     public class DbDataReaderMapper<TResultItem>
     {
         private static readonly MethodInfo? List_Add = typeof(List<TResultItem>).GetMethod(nameof(List<TResultItem>.Add), new Type[] { typeof(TResultItem) });
-        private static readonly MethodInfo? DbDataReaderMapper_GetNotCheckNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetNotCheckNullList), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo? DbDataReaderMapper_GetAllowDBNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetAllowDBNullList), BindingFlags.NonPublic | BindingFlags.Static);
         private static readonly MethodInfo? DbDataReaderMapper_GetName = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetName), BindingFlags.NonPublic | BindingFlags.Static);
 
         private delegate List<TResultItem> ToListHandle(DbDataReader? dbDataReader);
@@ -68,30 +68,30 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             var rowList = Expression.Variable(returnType, "rowList");
             var dbDataReader = Expression.Parameter(typeof(DbDataReader), "dbDataReader");
             var readerMap = Expression.Variable(typeof(int[]), "readerMap");
-            var notCheckNullList = Expression.Variable(typeof(bool[]), "notCheckNullList");
+            var allowDBNullList = Expression.Variable(typeof(bool[]), "allowDBNullList");
             var i = Expression.Variable(typeof(int), "i");
 
             var expression = Expression.Block(
-                                                new[] { rowList, readerMap, notCheckNullList, i },
+                                                new[] { rowList, readerMap, allowDBNullList, i },
                                                 Expression.Assign(rowList, Expression.New(returnType)),
                                                 Expression.IfThen(
                                                     Expression.NotEqual(dbDataReader, Expression.Constant(null)),
                                                     Expression.Block(
                                                         Expression.IfThen(
-                                                            Expression.Call(dbDataReader, DbDataReaderDefinitions.get_HasRows),
+                                                            Call(dbDataReader, DbDataReaderDefinitions.get_HasRows),
                                                             Expression.Block(
-                                                                Expression.Assign(readerMap, Expression.NewArrayBounds(typeof(int), Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount))),
-                                                                Expression.Assign(notCheckNullList, Expression.Call(null, DbDataReaderMapper_GetNotCheckNullList, dbDataReader)),
+                                                                Expression.Assign(readerMap, Expression.NewArrayBounds(typeof(int), Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount))),
+                                                                Expression.Assign(allowDBNullList, Call(null, DbDataReaderMapper_GetAllowDBNullList, dbDataReader)),
                                                                 For(
                                                                     i,
-                                                                    Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
+                                                                    Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
                                                                     Expression.Block(
                                                                         BuildInitSwitch(dbDataReader, i, readerMap, itmList, configuration)
                                                                     )
                                                                 ),
                                                                 While(
-                                                                    Expression.Call(dbDataReader, DbDataReaderDefinitions.Read),
-                                                                    BuildReadRow(dbDataReader, rowList, notCheckNullList, readerMap, itmList)
+                                                                    Call(dbDataReader, DbDataReaderDefinitions.Read),
+                                                                    BuildReadRow(dbDataReader, rowList, allowDBNullList, readerMap, itmList)
                                                                 )
                                                             )
                                                         )
@@ -113,8 +113,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             {
                 foreach (var propertyInfo in ttype.GetRuntimeProperties())
                 {
-                    var obj_set_MethodInfo = propertyInfo.SetMethod;
-                    if (ValidateProperty(propertyInfo, obj_set_MethodInfo))
+                    if (ValidateProperty(propertyInfo))
                     {
                         ProcessType(propertyInfo.PropertyType, out bool isNullable, out MethodInfo? dbDataReader_GetValue_MethodInfo);
                         if (dbDataReader_GetValue_MethodInfo != null)
@@ -193,7 +192,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             var switchExpression =
                 Expression.Block(
                     Expression.Switch(
-                        Expression.Call(null, DbDataReaderMapper_GetName, dbDataReader, i, Expression.Constant(configuration.CaseSensitive)),
+                        Call(null, DbDataReaderMapper_GetName, dbDataReader, i, Expression.Constant(configuration.CaseSensitive)),
                         switchCaseList.ToArray()
                     ),
                     Expression.Label(breakLabel)
@@ -202,7 +201,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return switchExpression;
         }
 
-        private static Expression BuildReadRow(ParameterExpression dbDataReader, ParameterExpression rowList, ParameterExpression notCheckNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
+        private static Expression BuildReadRow(ParameterExpression dbDataReader, ParameterExpression rowList, ParameterExpression allowDBNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
         {
             var obj = Expression.Parameter(typeof(TResultItem), "obj");
             var i = Expression.Variable(typeof(int), "i");
@@ -212,14 +211,14 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                                         Expression.Assign(obj, Expression.New(typeof(TResultItem))),
                                         For(
                                             i,
-                                            Expression.Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
-                                            BuildReadRowSwitch(dbDataReader, i, obj, notCheckNullList, readerMap, itemList)
+                                            Call(dbDataReader, DbDataReaderDefinitions.get_FieldCount),
+                                            BuildReadRowSwitch(dbDataReader, i, obj, allowDBNullList, readerMap, itemList)
                                         ),
-                                        Expression.Call(rowList, List_Add, obj)
+                                        Call(rowList, List_Add, obj)
                                     );
         }
 
-        private static Expression BuildReadRowSwitch(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression notCheckNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
+        private static Expression BuildReadRowSwitch(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression allowDBNullList, ParameterExpression readerMap, List<DbDataReaderMapperItem> itemList)
         {
             if (itemList.Count <= 0)
             {
@@ -234,7 +233,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                 switchCaseList.Add(
                         Expression.SwitchCase(
                             Expression.Block(
-                                BuildReadRowCase(dbDataReader, i, obj, notCheckNullList, item),
+                                BuildReadRowCase(dbDataReader, i, obj, allowDBNullList, item),
                                 Expression.Break(breakLabel)
                             ),
                             Expression.Constant(item.Code)
@@ -254,20 +253,24 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return switchExpression;
         }
 
-        private static Expression BuildReadRowCase(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression notCheckNullList, DbDataReaderMapperItem item)
+        private static Expression BuildReadRowCase(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, ParameterExpression allowDBNullList, DbDataReaderMapperItem item)
         {
-            return Expression.IfThen(
+            return Expression.IfThenElse(
                                             Expression.AndAlso(
-                                                Expression.ArrayAccess(notCheckNullList, i),
-                                                Expression.Not(Expression.Call(dbDataReader, DbDataReaderDefinitions.IsDBNull, i))
+                                                Expression.ArrayAccess(allowDBNullList, i),
+                                                Call(dbDataReader, DbDataReaderDefinitions.IsDBNull, i)
                                             ),
-                                            item is DbDataReaderMapperProperty ? BuildReadRowCaseSetValue(dbDataReader, i, obj, (DbDataReaderMapperProperty)item) : BuildReadRowCaseSetValue(dbDataReader, i, obj, (DbDataReaderMapperField)item)
-                                         );
+                                            Expression.Empty()
+                                            ,
+                                            item is DbDataReaderMapperProperty dataReaderMapperProperty ?
+                                            BuildReadRowCaseSetValue(dbDataReader, i, obj, dataReaderMapperProperty) :
+                                            BuildReadRowCaseSetValue(dbDataReader, i, obj, (DbDataReaderMapperField)item)
+                                         ); ;
         }
 
         private static Expression BuildReadRowCaseSetValue(ParameterExpression dbDataReader, ParameterExpression i, ParameterExpression obj, DbDataReaderMapperProperty property)
         {
-            return Expression.Call(
+            return Call(
                                         obj,
                                         property.SetMethod,
                                         BuildReadRowCaseGetValue(dbDataReader, i, property)
@@ -294,47 +297,33 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                     );
         }
 
-        private static Expression ConvertNull(Type type, bool isNullable)
+        private static bool[] GetAllowDBNullList(DbDataReader dbDataReader)
         {
-            if (isNullable)
+            var allowDBNullList = new bool[dbDataReader.FieldCount];
+            for (int i = 0; i < allowDBNullList.Length; i++)
             {
-                return Expression.Convert(Expression.Constant(null), type);
-            }
-            else
-            {
-                return Expression.Default(type);
-            }
-        }
-
-        private static bool[] GetNotCheckNullList(DbDataReader dbDataReader)
-        {
-            var resultList = new bool[dbDataReader.FieldCount];
-            for (int i = 0; i < resultList.Length; i++)
-            {
-                resultList[i] = true;
+                allowDBNullList[i] = true;
             }
 
             if (dbDataReader.CanGetColumnSchema())
             {
                 var columnSchema = dbDataReader.GetColumnSchema();
-                if (columnSchema.Count > 0)
+                for (int i = 0; i < columnSchema.Count; i++)
                 {
-                    for (int i = 0; i < columnSchema.Count; i++)
+                    var dbColumn = columnSchema[i];
+                    if (dbColumn.ColumnOrdinal.HasValue && dbColumn.AllowDBNull.HasValue)
                     {
-                        var dbColumn = columnSchema[i];
-                        if (dbColumn.ColumnOrdinal.HasValue && dbColumn.AllowDBNull.HasValue)
-                        {
-                            resultList[dbColumn.ColumnOrdinal.Value] = !dbColumn.AllowDBNull.Value;
-                        }
+                        allowDBNullList[dbColumn.ColumnOrdinal.Value] = dbColumn.AllowDBNull.Value;
                     }
                 }
             }
 
-            return resultList;
+            return allowDBNullList;
         }
 
-        private static bool ValidateProperty(PropertyInfo pi, MethodInfo mi)
+        private static bool ValidateProperty(PropertyInfo pi)
         {
+            var mi = pi.SetMethod;
             return pi != null && mi != null && !pi.PropertyType.IsPointer && mi.IsPublic && !mi.IsStatic && mi.GetParameters().Length == 1;
         }
 
@@ -436,9 +425,9 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                         {
                             obj = GetValue(dbDataReader, ordinal, type, typeCode);
 
-                            if (obj is TResultItem)
+                            if (obj is TResultItem resultItem)
                             {
-                                t = (TResultItem)obj;
+                                t = resultItem;
                             }
                             else
                             {
@@ -534,6 +523,33 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                 default:
                     return dbDataReader.GetValue(ordinal);
             }
+        }
+
+        private static MethodCallExpression Call(Expression? instance, MethodInfo? method)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            return Expression.Call(instance, method);
+        }
+
+        private static MethodCallExpression Call(Expression? instance, MethodInfo? method, params Expression[]? arguments)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            return Expression.Call(instance, method, arguments);
+        }
+
+        private static MethodCallExpression Call(Expression? instance, MethodInfo? method, Expression arg0, Expression arg1, Expression arg2)
+        {
+            if (method == null)
+            {
+                throw new ArgumentNullException(nameof(method));
+            }
+            return Expression.Call(instance, method, arg0, arg1, arg2);
         }
 
         /// <summary>

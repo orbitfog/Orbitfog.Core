@@ -19,7 +19,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 
         public override object this[int ordinal] => GetValue(ordinal);
 
-        public override object? this[string name] => list[rowNumber].GetValue(name);
+        public override object this[string name] => list[rowNumber].GetValue(name);
 
         public override int Depth => throw new NotImplementedException();
 
@@ -41,7 +41,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
             return (byte)GetValue(ordinal);
         }
 
-        public override long GetBytes(int ordinal, long dataOffset, byte[] buffer, int bufferOffset, int length)
+        public override long GetBytes(int ordinal, long dataOffset, byte[]? buffer, int bufferOffset, int length)
         {
             return (long)GetValue(ordinal);
         }
@@ -51,7 +51,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
             return (char)GetValue(ordinal);
         }
 
-        public override long GetChars(int ordinal, long dataOffset, char[] buffer, int bufferOffset, int length)
+        public override long GetChars(int ordinal, long dataOffset, char[]? buffer, int bufferOffset, int length)
         {
             throw new NotImplementedException();
         }
@@ -149,8 +149,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 
         public override bool IsDBNull(int ordinal)
         {
-            var value = list[rowNumber].GetValue(ordinal);
-            return value == null;
+            return list[rowNumber].IsDBNull(ordinal);
         }
 
         public override bool NextResult()

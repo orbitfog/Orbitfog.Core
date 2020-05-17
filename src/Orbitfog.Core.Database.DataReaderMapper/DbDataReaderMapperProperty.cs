@@ -6,7 +6,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
     internal class DbDataReaderMapperProperty : DbDataReaderMapperItem
     {
         private PropertyInfo PropertyInfo { get; set; }
-        public MethodInfo SetMethod => PropertyInfo.SetMethod;
+        public MethodInfo? SetMethod => PropertyInfo.SetMethod;
         public override Type ItemType => PropertyInfo.PropertyType;
         public override string ItemName => PropertyInfo.Name;
         public override bool IsValueTypeNullable => PropertyInfo.PropertyType.IsValueType && IsNullable;

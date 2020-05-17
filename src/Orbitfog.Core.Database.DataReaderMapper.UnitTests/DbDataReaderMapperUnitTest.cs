@@ -100,10 +100,12 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
             Assert.Equal(DateTime.Today, list[0].DateTimeValue);
             Assert.Equal(default, list[1].DateTimeValue);
 
-            Assert.True((new byte[] { 5, 8 }).SequenceEqual(list[0].ByteArrayValue));
+            Assert.True((new byte[] { 5, 8 }).SequenceEqual(list[0].ByteArrayValue!));
             Assert.Null(list[1].ByteArrayValue);
 
+            Assert.Equal(SomeEnum.A, list[0].EnumValue);
             Assert.Equal(SomeEnum.B, list[1].EnumValue);
+            Assert.Equal(SomeEnum.C, list[2].EnumValue);
         }
 
         [Fact]
@@ -154,10 +156,12 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
             Assert.Equal(DateTime.Today, list[0].DateTimeValue);
             Assert.Equal(default, list[1].DateTimeValue);
 
-            Assert.True((new byte[] { 5, 8 }).SequenceEqual(list[0].ByteArrayValue));
+            Assert.True((new byte[] { 5, 8 }).SequenceEqual(list[0].ByteArrayValue!));
             Assert.Null(list[1].ByteArrayValue);
 
+            Assert.Equal(SomeEnum.A, list[0].EnumValue);
             Assert.Equal(SomeEnum.B, list[1].EnumValue);
+            Assert.Equal(SomeEnum.C, list[2].EnumValue);
         }
 
         [Fact]
