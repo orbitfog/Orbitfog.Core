@@ -14,13 +14,13 @@ namespace Orbitfog.Core.Database.DataReaderMapper
 
         private delegate List<TResultItem> ToListHandle(DbDataReader? dbDataReader);
 
-        private static Lazy<ToListHandle> toList = InitializeInternal();
+        private static Lazy<ToListHandle> toList = CreateToList();
 
         private DbDataReaderMapper()
         {
         }
 
-        private static Lazy<ToListHandle> InitializeInternal(DbDataReaderMapperConfiguration? configuration = null)
+        private static Lazy<ToListHandle> CreateToList(DbDataReaderMapperConfiguration? configuration = null)
         {
             var result = new Lazy<ToListHandle>(() =>
             {
@@ -41,7 +41,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
 
         public static void Initialize(DbDataReaderMapperConfiguration? configuration = null)
         {
-            toList = InitializeInternal(configuration);
+            toList = CreateToList(configuration);
         }
 
         public static void Initialize(Action<DbDataReaderMapperConfiguration> configuration)
@@ -49,7 +49,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             var configuration2 = new DbDataReaderMapperConfiguration();
             configuration.Invoke(configuration2);
 
-            toList = InitializeInternal(configuration2);
+            Initialize(configuration2);
         }
 
         public static List<TResultItem> ToList(DbDataReader dbDataReader)
