@@ -5,22 +5,22 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 {
     public class FakeDbDataReaderRow
     {
-        private readonly Dictionary<string, object> nameValueList;
-        private readonly Dictionary<int, object> ordinalValueList;
+        private readonly Dictionary<string, object?> nameValueList;
+        private readonly Dictionary<int, object?> ordinalValueList;
         private readonly Dictionary<int, string> ordinalNameList;
         private readonly Dictionary<string, int> nameOrdinalList;
         private readonly Dictionary<int, Type> typeList;
 
         public FakeDbDataReaderRow()
         {
-            nameValueList = new Dictionary<string, object>();
-            ordinalValueList = new Dictionary<int, object>();
+            nameValueList = new Dictionary<string, object?>();
+            ordinalValueList = new Dictionary<int, object?>();
             ordinalNameList = new Dictionary<int, string>();
             nameOrdinalList = new Dictionary<string, int>();
             typeList = new Dictionary<int, Type>();
         }
 
-        public FakeDbDataReaderRow AddColumn(Type type, string name, object value)
+        public FakeDbDataReaderRow AddColumn(Type type, string name, object? value)
         {
             int ordinal = nameValueList.Count;
 
@@ -33,12 +33,12 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
             return this;
         }
 
-        public object GetValue(int ordinal)
+        public object? GetValue(int ordinal)
         {
             return ordinalValueList[ordinal];
         }
 
-        public object GetValue(string name)
+        public object? GetValue(string name)
         {
             return nameValueList[name];
         }

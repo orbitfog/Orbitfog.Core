@@ -8,56 +8,48 @@ namespace Orbitfog.Core.Database.DataReaderMapper
 {
     public class DbDataReaderMapper<TResultItem>
     {
-        private static readonly MethodInfo List_Add = typeof(List<TResultItem>).GetMethod(nameof(List<TResultItem>.Add), new Type[] { typeof(TResultItem) });
-        private static readonly MethodInfo DbDataReaderMapper_GetNotCheckNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetNotCheckNullList), BindingFlags.NonPublic | BindingFlags.Static);
-        private static readonly MethodInfo DbDataReaderMapper_GetName = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetName), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo? List_Add = typeof(List<TResultItem>).GetMethod(nameof(List<TResultItem>.Add), new Type[] { typeof(TResultItem) });
+        private static readonly MethodInfo? DbDataReaderMapper_GetNotCheckNullList = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetNotCheckNullList), BindingFlags.NonPublic | BindingFlags.Static);
+        private static readonly MethodInfo? DbDataReaderMapper_GetName = typeof(DbDataReaderMapper<TResultItem>).GetMethod(nameof(GetName), BindingFlags.NonPublic | BindingFlags.Static);
 
-        private delegate List<TResultItem> ToListHandle(DbDataReader dbDataReader);
+        private delegate List<TResultItem> ToListHandle(DbDataReader? dbDataReader);
 
-        private static Lazy<ToListHandle> toList;
-
-        static DbDataReaderMapper()
-        {
-            Initialize();
-        }
-
-        private static ToListHandle InitializeToList(DbDataReaderMapperConfiguration configuration = null)
-        {
-            if (OnlyFirstColumn())
-            {
-                return ToListFirstColumn;
-            }
-            else
-            {
-                return BuildToListMultiColumn(configuration);
-            }
-        }
+        private static Lazy<ToListHandle> toList = InitializeInternal();
 
         private DbDataReaderMapper()
         {
         }
 
-        public static void Initialize(DbDataReaderMapperConfiguration configuration = null)
+        private static Lazy<ToListHandle> InitializeInternal(DbDataReaderMapperConfiguration? configuration = null)
         {
-            toList = new Lazy<ToListHandle>(() =>
+            var result = new Lazy<ToListHandle>(() =>
             {
-                return InitializeToList(configuration);
+                if (OnlyFirstColumn())
+                {
+                    return ToListFirstColumn;
+                }
+                else
+                {
+                    return BuildToListMultiColumn(configuration);
+                }
             });
 
-            toList.Value(null);
+            result.Value(null);
+
+            return result;
+        }
+
+        public static void Initialize(DbDataReaderMapperConfiguration? configuration = null)
+        {
+            toList = InitializeInternal(configuration);
         }
 
         public static void Initialize(Action<DbDataReaderMapperConfiguration> configuration)
         {
-            toList = new Lazy<ToListHandle>(() =>
-            {
-                var configuration2 = new DbDataReaderMapperConfiguration();
-                configuration.Invoke(configuration2);
+            var configuration2 = new DbDataReaderMapperConfiguration();
+            configuration.Invoke(configuration2);
 
-                return InitializeToList(configuration2);
-            });
-
-            toList.Value(null);
+            toList = InitializeInternal(configuration2);
         }
 
         public static List<TResultItem> ToList(DbDataReader dbDataReader)
@@ -65,9 +57,9 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return toList.Value(dbDataReader);
         }
 
-        private static ToListHandle BuildToListMultiColumn(DbDataReaderMapperConfiguration configuration)
+        private static ToListHandle BuildToListMultiColumn(DbDataReaderMapperConfiguration? configuration)
         {
-            configuration = configuration ?? DbDataReaderMapperConfiguration.Default;
+            configuration ??= DbDataReaderMapperConfiguration.Default;
 
             var itmList = GetItemList(configuration);
 
@@ -124,7 +116,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                     var obj_set_MethodInfo = propertyInfo.SetMethod;
                     if (ValidateProperty(propertyInfo, obj_set_MethodInfo))
                     {
-                        ProcessType(propertyInfo.PropertyType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
+                        ProcessType(propertyInfo.PropertyType, out bool isNullable, out MethodInfo? dbDataReader_GetValue_MethodInfo);
                         if (dbDataReader_GetValue_MethodInfo != null)
                         {
                             resultList.Add(new DbDataReaderMapperProperty(code, isNullable, dbDataReader_GetValue_MethodInfo, propertyInfo));
@@ -139,7 +131,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                 {
                     if (ValidateField(fieldInfo))
                     {
-                        ProcessType(fieldInfo.FieldType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo);
+                        ProcessType(fieldInfo.FieldType, out bool isNullable, out MethodInfo? dbDataReader_GetValue_MethodInfo);
                         if (dbDataReader_GetValue_MethodInfo != null)
                         {
                             resultList.Add(new DbDataReaderMapperField(code, isNullable, dbDataReader_GetValue_MethodInfo, fieldInfo));
@@ -152,7 +144,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return resultList;
         }
 
-        private static void ProcessType(Type propertyType, out bool isNullable, out MethodInfo dbDataReader_GetValue_MethodInfo)
+        private static void ProcessType(Type propertyType, out bool isNullable, out MethodInfo? dbDataReader_GetValue_MethodInfo)
         {
             isNullable = false;
 
@@ -351,7 +343,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return fi != null && !fi.FieldType.IsPointer && fi.IsPublic && !fi.IsStatic;
         }
 
-        private static MethodInfo DbDataReade_GetValue_MethodInfo(Type type)
+        private static MethodInfo? DbDataReade_GetValue_MethodInfo(Type type)
         {
             var typeCode = Type.GetTypeCode(type);
             switch (typeCode)
@@ -420,7 +412,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
             return false;
         }
 
-        private static List<TResultItem> ToListFirstColumn(DbDataReader dbDataReader)
+        private static List<TResultItem> ToListFirstColumn(DbDataReader? dbDataReader)
         {
             var resultList = new List<TResultItem>();
 
@@ -438,7 +430,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper
                     {
                         if (dbDataReader.IsDBNull(ordinal))
                         {
-                            t = default;
+                            t = default!;
                         }
                         else
                         {

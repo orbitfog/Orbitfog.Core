@@ -16,13 +16,13 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 
         private class ClassA
         {
-            public string StringValue { get; set; }
+            public string? StringValue { get; set; }
             public bool BoolValue { get; set; }
             public int IntValue { get; set; }
             public int? IntNullableValue { get; set; }
             public Guid GuidValue { get; set; }
             public DateTime DateTimeValue { get; set; }
-            public byte[] ByteArrayValue { get; set; }
+            public byte[]? ByteArrayValue { get; set; }
             public SomeEnum EnumValue { get; set; }
         }
 
@@ -33,13 +33,13 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
         private class ClassC
         {
 #pragma warning disable 0649
-            public string StringValue;
+            public string? StringValue;
             public bool BoolValue;
             public int IntValue;
             public int? IntNullableValue;
             public Guid GuidValue;
             public DateTime DateTimeValue;
-            public byte[] ByteArrayValue;
+            public byte[]? ByteArrayValue;
             public SomeEnum EnumValue;
 #pragma warning restore 0649
         }

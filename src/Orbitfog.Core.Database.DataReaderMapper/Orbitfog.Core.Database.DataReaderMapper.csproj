@@ -2,9 +2,11 @@
 
   <PropertyGroup>
     <TargetFrameworks>netcoreapp2.0;net451;netstandard2.0</TargetFrameworks>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
     <Authors>orbitfog</Authors>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>0.3.0</Version>
+    <Version>0.4.0</Version>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <Description>High-performance library to map System.Data.Common.DbDataReader to any class</Description>
     <Copyright>orbitfog</Copyright>

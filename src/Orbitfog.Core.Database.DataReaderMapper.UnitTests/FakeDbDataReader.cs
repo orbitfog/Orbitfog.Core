@@ -19,7 +19,7 @@ namespace Orbitfog.Core.Database.DataReaderMapper.UnitTests
 
         public override object this[int ordinal] => GetValue(ordinal);
 
-        public override object this[string name] => list[rowNumber].GetValue(name);
+        public override object? this[string name] => list[rowNumber].GetValue(name);
 
         public override int Depth => throw new NotImplementedException();
 
